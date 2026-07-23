@@ -523,14 +523,14 @@
             
             let mensaje = `*SOLICITUD DE RECORRIDO INMEDIATO* \n`;
             mensaje += `───────────────────────\n\n`;
-            mensaje += ` *Origen:* _Fijado automáticamente por GPS_ \n`;
+            mensaje += ` *Hola! sergio chala, puedes pasar por mi?* \n`;
             mensaje += ` *Destino:* ${destino}\n`;
             if(notas) {
                 mensaje += ` *Detalles:* ${notas}\n`;
             }
             mensaje += `\n *Coordenadas de Origen en Tiempo Real:* \n${datosUbicacionActual}\n\n`;
             mensaje += `───────────────────────\n\n`;
-            mensaje += ` *Tiempo estimado de respuesta 5min*`;
+            mensaje += ` *Tiempo estimado de respuesta 10min*`;
 
             window.open(`https://wa.me/${WHATSAPP_DESTINO}?text=${encodeURIComponent(mensaje)}`, '_blank');
         }
