@@ -422,31 +422,22 @@
 
         <!-- Tarjeta Conductor de Confianza -->
         <div class="tarjeta-cyber tarjeta-conductor">
-            <img src="699116233_989437980648237_9201268186456313724_n.jpg" alt="Foto Sergio Alejandro Tapiero Chala" class="foto-conductor">
+            <img src="https://scontent.fnva2-1.fna.fbcdn.net/v/t39.30808-6/699116233_989437980648237_9201268186456313724_n.jpg?stp=dst-jpg_tt6&cstp=mx944x1135&ctp=s944x1135&_nc_cat=104&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeF20nckf-W9D3ZFO7cEU1xSlECitdgceRmUQKK12Bx5GWvzlgUUxyauRT7-iPD92RZ-aTX-rvfv8ZiXQ66KkWHV&_nc_ohc=ganR2FkYhr0Q7kNvwHTicbp&_nc_oc=AdrxaMxzFwKtYAsi8LIBm2DQYBLwpc5LUjsXOANMDkOQw85duwulwiV-JrKlk877gi0&_nc_zt=23&_nc_ht=scontent.fnva2-1.fna&_nc_gid=sz2j6utW2QrHMTlbo6H6gA&_nc_ss=7b2a8&oh=00_AQAobsTuhEl2RWIimscO7FLl5whp_msgKuN3TKJx7g4I7A&oe=6A66D12A" alt="Foto Sergio Alejandro Tapiero Chala" class="foto-conductor">
             <div class="info-conductor">
                 <div class="badge-verificado">
                     <span class="material-icons" style="font-size: 14px;">verified</span> Conductor Asignado
                 </div>
                 <div class="nombre-conductor">Sergio Alejandro Tapiero Chala</div>
                 <div class="detalle-licencia">
-                    Licencia: <strong>1006056890</strong> | Categ: <strong>A2</strong>
+                    Licencia: <strong>1006056890</strong> | Moto <strong>Raider 125 negra</strong>
+                </div>
+                <div class="detalle-licencia">
+                    Placa <strong>BWQ 69H</strong>
                 </div>
             </div>
         </div>
 
-        <!-- Sección Informativa del Servicio -->
-        <div class="tarjeta-cyber info-recorridos">
-            <p>Si buscas un servicio de transporte rápido, seguro y totalmente confiable, <strong>Recorridos</strong> es tu mejor opción. 📍</p>
-            <p>Nos encargamos de que llegues a tiempo a tus citas, trabajo, compromisos o de regreso a casa, con la comodidad y la tranquilidad que te mereces.</p>
-            
-            <h5>¿Por qué elegirnos?</h5>
-            <ul>
-                <li>⏱️ <span><strong>Puntualidad garantizada:</strong> Respetamos tu tiempo.</span></li>
-                <li>🔒 <span><strong>Viajes seguros:</strong> Conductores de confianza y rutas optimizadas.</span></li>
-                <li>💬 <span><strong>Fácil de solicitar:</strong> Sin enredos ni esperas largas.</span></li>
-            </ul>
-            <p style="margin-top: 12px; margin-bottom: 0; font-weight: bold; color: var(--neon-verde);">¡Olvídate del estrés del tráfico! Déjanos el volante a nosotros.</p>
-        </div>
+        
 
         <div class="tarjeta-cyber">
             <div class="grupo-input">
@@ -472,6 +463,19 @@
             <a href="tel:3189882787" class="btn-flotante btn-llamada">
                 <span class="material-icons">phone_in_talk</span> Soporte Telefónico
             </a>
+        </div>
+        <!-- Sección Informativa del Servicio -->
+        <div class="tarjeta-cyber info-recorridos">
+            <p>Si buscas un servicio de transporte rápido, seguro y totalmente confiable, <strong>Recorridos</strong> es tu mejor opción. 📍</p>
+            <p>Nos encargamos de que llegues a tiempo a tus citas, trabajo, compromisos o de regreso a casa, con la comodidad y la tranquilidad que te mereces.</p>
+            
+            <h5>¿Por qué elegirnos?</h5>
+            <ul>
+                <li>⏱️ <span><strong>Puntualidad garantizada:</strong> Respetamos tu tiempo.</span></li>
+                <li>🔒 <span><strong>Viajes seguros:</strong> Conductores de confianza y rutas optimizadas.</span></li>
+                <li>💬 <span><strong>Fácil de solicitar:</strong> Sin enredos ni esperas largas.</span></li>
+            </ul>
+            <p style="margin-top: 12px; margin-bottom: 0; font-weight: bold; color: var(--neon-verde);">¡Olvídate del estrés del tráfico! Déjanos el volante a nosotros.</p>
         </div>
 
         <footer class="copyright">
