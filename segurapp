@@ -1,539 +1,615 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SegurApp Recorridos</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Financiero Personal (COP)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome para Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --bg-principal: #000000;
-            --bg-tarjeta: #121212;
-            --bg-input: #1a1a1a;
-            --neon-verde: #ff1e27; /* Rojo deportivo principal */
-            --neon-cian: #ffffff;    /* Blanco puro para contraste de realces */
-            --neon-rosa: #e50914;    /* Rojo secundario/alerta oscuro */
-            --texto-principal: #ffffff;
-            --texto-secundario: #a0a0a0; /* Gris plata */
-            --borde-sutil: rgba(255, 255, 255, 0.1);
-            --fuente: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-            font-family: var(--fuente);
-        }
-
-        body {
-            background-color: var(--bg-principal);
-            color: var(--texto-principal);
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* Fondo temático limpio sin overlays pesados */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(180deg, rgba(0, 0, 0, 0.9) 0%, rgba(18, 18, 18, 0.98) 100%),
-                        url('https://imgs.search.brave.com/4EBMHUrFzUMmziphOMTPiPrRGPM74GSSptcyBcla7gU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9kZWxj/YXIuY29tLnV5L3dw/LWNvbnRlbnQvdXBs/b2Fkcy8yMDIzLzEw/L1JBSURFUi03LXNj/YWxlZC5qcGc') no-repeat center center;
-            background-size: cover;
-            z-index: -1;
-            transform: translateZ(0);
-        }
-
-        /* Contenedor de Pantallas */
-        .pantalla {
-            display: none;
-            min-height: 100vh;
-            padding: 24px;
-            padding-bottom: 110px;
-            opacity: 0;
-            transform: translateY(8px);
-            transition: opacity 0.35s ease, transform 0.35s ease;
-            will-change: transform, opacity;
-        }
-
-        .pantalla.activa {
-            display: flex;
-            flex-direction: column;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Animaciones refinadas y sutiles */
-        @keyframes pulsoLogo {
-            0%, 100% { border-color: rgba(255, 30, 39, 0.4); box-shadow: 0 0 10px rgba(255, 30, 39, 0.1); }
-            50% { border-color: var(--neon-verde); box-shadow: 0 0 20px rgba(255, 30, 39, 0.4); }
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Animación para el reflejo metálico */
-        @keyframes barridoMetalico {
-            0% { left: -150%; }
-            50% { left: -150%; }
-            100% { left: 150%; }
-        }
-
-        /* Encabezados Tipográficos Modernos */
-        .titulo-app {
-            text-align: center;
-            font-size: 2rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #fff;
-        }
-
-        .subtitulo-app {
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--texto-secundario);
-            margin-bottom: 30px;
-            line-height: 1.4;
-            max-width: 320px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        #pantalla-home .subtitulo-app {
-            color: var(--neon-verde);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-        }
-
-        /* Tarjetas Estilo "Glow Plano" Mate con Reflejo Metálico */
-        .tarjeta-cyber {
-            background: var(--bg-tarjeta);
-            border: 1px solid var(--borde-sutil);
-            border-radius: 24px;
-            padding: 24px;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.25s ease;
-        }
-
-        .tarjeta-cyber::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.03) 20%,
-                rgba(255, 255, 255, 0.12) 50%,
-                rgba(255, 255, 255, 0.03) 80%,
-                rgba(255, 255, 255, 0) 100%
-            );
-            transform: skewX(-25deg);
-            animation: barridoMetalico 6s infinite ease-in-out;
-            pointer-events: none;
-        }
-
-        .grupo-input {
-            margin-bottom: 20px;
-        }
-
-        .grupo-input label {
-            display: block;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: var(--texto-secundario);
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-
-        /* Inputs Sólidos Modernos */
-        .input-cyber {
-            width: 100%;
-            background: var(--bg-input);
-            border: 1px solid transparent;
-            border-radius: 14px;
-            padding: 16px;
-            color: #fff;
-            font-size: 0.95rem;
-            transition: all 0.2s ease;
-        }
-
-        .input-cyber:focus {
-            outline: none;
-            border-color: rgba(255, 30, 39, 0.5);
-            background: #222222;
-        }
-
-        /* Botones Planos de Alto Contraste */
-        .btn-neon {
-            width: 100%;
-            background: var(--neon-verde);
-            color: #ffffff;
-            border: none;
-            padding: 16px;
-            border-radius: 14px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.1s ease, background-color 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        /* Animaciones del Botón "Solicitar Servicio" */
-        @keyframes motorRalenti {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
-        @keyframes pulsoMagnetico {
-            0% {
-                box-shadow: 0 0 0 0 rgba(255, 30, 39, 0.7), 
-                            0 0 0 0 rgba(255, 30, 39, 0.4);
+        @keyframes pulse-red {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+                border-color: rgba(239, 68, 68, 1);
             }
-            70% {
-                box-shadow: 0 0 0 12px rgba(255, 30, 39, 0), 
-                            0 0 0 24px rgba(255, 30, 39, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(255, 30, 39, 0), 
-                            0 0 0 0 rgba(255, 30, 39, 0);
+            50% {
+                box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+                border-color: rgba(220, 38, 38, 1);
             }
         }
 
-        @keyframes destelloCritico {
-            0% { left: -150%; }
-            30% { left: 150%; }
-            100% { left: 150%; }
+        @keyframes blink-warning {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
         }
 
-        #pantalla-home .btn-neon-solicitar {
-            background: linear-gradient(135deg, #ff1e27 0%, #e50914 100%) !important;
-            color: #ffffff !important;
-            font-size: 1.05rem !important;
-            letter-spacing: 1px !important;
-            box-shadow: 0 4px 20px rgba(255, 30, 39, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            animation: motorRalenti 1.8s infinite ease-in-out, 
-                       pulsoMagnetico 2s infinite ease-in-out !important;
-            transition: all 0.2s ease-in-out !important;
+        .overdue-alert {
+            animation: pulse-red 2s infinite, blink-warning 1.5s infinite ease-in-out;
+            border: 2px solid #ef4444 !important;
+            background-color: rgba(254, 242, 242, 0.7) !important;
         }
 
-        #pantalla-home .btn-neon-solicitar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            width: 120%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.2) 20%,
-                rgba(255, 255, 255, 0.6) 50%,
-                rgba(255, 255, 255, 0.2) 80%,
-                rgba(255, 255, 255, 0) 100%
-            ) !important;
-            transform: skewX(-20deg);
-            animation: destelloCritico 3.5s infinite ease-in-out !important;
-            pointer-events: none;
-        }
-
-        #pantalla-home .btn-neon-solicitar:active {
-            transform: scale(0.96) !important;
-            background: #990005 !important;
-            box-shadow: 0 2px 10px rgba(255, 30, 39, 0.2);
-        }
-
-        #pantalla-home .btn-neon-solicitar .material-icons {
-            font-size: 24px;
-            filter: drop-shadow(0 0 2px rgba(255,255,255,0.6));
-        }
-
-        /* Menú de contacto flotante */
-        .barra-contacto {
-            position: fixed;
-            bottom: 24px; left: 24px; right: 24px;
-            display: flex;
-            gap: 12px;
-            z-index: 100;
-        }
-
-        .btn-flotante {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 16px;
-            border-radius: 16px;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            text-decoration: none;
-            transition: transform 0.1s ease;
-        }
-
-        .btn-flotante:active {
-            transform: scale(0.96);
-        }
-
-        .btn-llamada {
-            background: #1a1a1a;
-            color: var(--neon-verde);
-            border: 1px solid rgba(255, 30, 39, 0.2);
-        }
-
-        .status-ubicacion {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
-            margin-top: 5px;
-            color: var(--neon-rosa);
-        }
-        .status-ubicacion.listo {
-            color: #ffffff;
-        }
-        
-        .status-ubicacion .material-icons {
-            animation: spin 2s infinite linear;
-        }
-
-        .copyright {
-            text-align: center;
-            font-size: 0.7rem;
-            color: var(--texto-secundario);
-            margin-top: auto;
-            padding-top: 30px;
-            line-height: 1.5;
-        }
-        .copyright span {
-            color: #fff;
-            font-weight: 600;
-        }
-
-        /* Estilos específicos para la sección informativa */
-        .info-recorridos {
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-        .info-recorridos p {
-            margin-bottom: 12px;
-            color: var(--texto-principal);
-        }
-        .info-recorridos h5 {
-            color: var(--neon-verde);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-            letter-spacing: 0.5px;
-        }
-        .info-recorridos ul {
-            list-style: none;
-            padding-left: 0;
-        }
-        .info-recorridos li {
-            margin-bottom: 8px;
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            color: var(--texto-secundario);
-        }
-        .info-recorridos li span {
-            color: var(--texto-principal);
-        }
-
-        /* Estilos Tarjeta Conductor de Confianza */
-        .tarjeta-conductor {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            border-left: 4px solid var(--neon-verde);
-        }
-
-        .foto-conductor {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--neon-verde);
-            box-shadow: 0 0 10px rgba(255, 30, 39, 0.3);
-            flex-shrink: 0;
-        }
-
-        .info-conductor {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .badge-verificado {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #4cd964;
-            font-weight: 700;
-        }
-
-        .nombre-conductor {
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: #ffffff;
-            text-transform: capitalize;
-        }
-
-        .detalle-licencia {
-            font-size: 0.75rem;
-            color: var(--texto-secundario);
-        }
-
-        .detalle-licencia strong {
-            color: #ffffff;
+        .dark .overdue-alert {
+            background-color: rgba(127, 29, 29, 0.3) !important;
         }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col">
 
-    <!-- Pantalla Principal Única -->
-    <div id="pantalla-home" class="pantalla activa">
-        <div class="titulo-app">SegurApp</div>
-        <div class="subtitulo-app">Recorridos en la ciudad de Neiva</div>
-
-        <!-- Tarjeta Conductor de Confianza -->
-        <div class="tarjeta-cyber tarjeta-conductor">
-            <img src="https://scontent.fnva2-1.fna.fbcdn.net/v/t39.30808-6/699116233_989437980648237_9201268186456313724_n.jpg?stp=dst-jpg_tt6&cstp=mx944x1135&ctp=s944x1135&_nc_cat=104&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeF20nckf-W9D3ZFO7cEU1xSlECitdgceRmUQKK12Bx5GWvzlgUUxyauRT7-iPD92RZ-aTX-rvfv8ZiXQ66KkWHV&_nc_ohc=ganR2FkYhr0Q7kNvwHTicbp&_nc_oc=AdrxaMxzFwKtYAsi8LIBm2DQYBLwpc5LUjsXOANMDkOQw85duwulwiV-JrKlk877gi0&_nc_zt=23&_nc_ht=scontent.fnva2-1.fna&_nc_gid=sz2j6utW2QrHMTlbo6H6gA&_nc_ss=7b2a8&oh=00_AQAobsTuhEl2RWIimscO7FLl5whp_msgKuN3TKJx7g4I7A&oe=6A66D12A" alt="Foto Sergio Alejandro Tapiero Chala" class="foto-conductor">
-            <div class="info-conductor">
-                <div class="badge-verificado">
-                    <span class="material-icons" style="font-size: 14px;">verified</span> Conductor Asignado
+    <header class="bg-white dark:bg-slate-800 shadow-sm border-b border-slate-200 dark:border-slate-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-emerald-600 text-white p-2.5 rounded-xl shadow-md">
+                    <i class="fa-solid fa-wallet text-xl"></i>
                 </div>
-                <div class="nombre-conductor">Sergio Alejandro Tapiero Chala</div>
-                <div class="detalle-licencia">
-                    Licencia: <strong>1006056890</strong> | Moto <strong>Raider 125 negra</strong>
-                </div>
-                <div class="detalle-licencia">
-                    Placa <strong>BWQ 69H</strong>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">FinanzasApp</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Control Financiero Personal (COP)</p>
                 </div>
             </div>
-        </div>
-
-        
-
-        <div class="tarjeta-cyber">
-            <div class="grupo-input">
-                <span style="color:#ff0000; font-size: 13px; display:inline-block; margin-bottom:10px;">⏳ ¡Reserva con 10 minutos de anticipación!</span>
-
-                <label>Notas de Ruta (Opcional)</label>
-                <input type="text" id="reserva-notas" class="input-cyber" placeholder="Ej: Llevar casco extra, maleta pesada...">
-            </div>
-
-            <div class="status-ubicacion" id="geo-status">
-                <span class="material-icons" style="font-size: 18px;">share_location</span>
-                <span id="geo-texto">Sincronizando radar GPS...</span>
-            </div>
-            
-            <div style="margin-top: 25px;">
-                <button type="button" class="btn-neon btn-neon-solicitar" onclick="enviarReserva()">
-                    <span class="material-icons">motorcycle</span> Solicitar Servicio Ahora
+            <div class="flex items-center gap-3">
+                <!-- Botón de Modo Oscuro / Claro -->
+                <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition text-slate-600 dark:text-slate-300 shadow-sm" title="Cambiar Tema">
+                    <i id="theme-icon" class="fa-solid fa-moon"></i>
                 </button>
             </div>
         </div>
+    </header>
 
-        <div class="barra-contacto">
-            <a href="tel:3189882787" class="btn-flotante btn-llamada">
-                <span class="material-icons">phone_in_talk</span> Soporte Telefónico
-            </a>
-        </div>
-        <!-- Sección Informativa del Servicio -->
-        <div class="tarjeta-cyber info-recorridos">
-            <p>Si buscas un servicio de transporte rápido, seguro y totalmente confiable, <strong>Recorridos</strong> es tu mejor opción. 📍</p>
-            <p>Nos encargamos de que llegues a tiempo a tus citas, trabajo, compromisos o de regreso a casa, con la comodidad y la tranquilidad que te mereces.</p>
+    <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow space-y-8">
+
+        <!-- 1. DASHBOARD / RESUMEN GENERAL -->
+        <section>
+            <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-chart-pie text-emerald-600"></i> Resumen General
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Balance Total -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+                    <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 mb-2">
+                        <span class="text-sm font-medium">Balance Actual</span>
+                        <i class="fa-solid fa-scale-balanced text-emerald-500 text-lg"></i>
+                    </div>
+                    <span id="card-balance" class="text-2xl font-bold tracking-tight">$0</span>
+                </div>
+                <!-- Total Ingresos -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+                    <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 mb-2">
+                        <span class="text-sm font-medium">Total Ingresos</span>
+                        <i class="fa-solid fa-arrow-trend-up text-blue-500 text-lg"></i>
+                    </div>
+                    <span id="card-income" class="text-2xl font-bold tracking-tight text-blue-600 dark:text-blue-400">$0</span>
+                </div>
+                <!-- Total Gastos -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+                    <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 mb-2">
+                        <span class="text-sm font-medium">Total Gastos</span>
+                        <i class="fa-solid fa-arrow-trend-down text-rose-500 text-lg"></i>
+                    </div>
+                    <span id="card-expense" class="text-2xl font-bold tracking-tight text-rose-600 dark:text-rose-400">$0</span>
+                </div>
+                <!-- Ahorro / Presupuesto Restante -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+                    <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 mb-2">
+                        <span class="text-sm font-medium">Ahorros / Restante</span>
+                        <i class="fa-solid fa-piggy-bank text-amber-500 text-lg"></i>
+                    </div>
+                    <span id="card-savings" class="text-2xl font-bold tracking-tight text-amber-600 dark:text-amber-400">$0</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <h3 class="text-md font-semibold mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-chart-bar text-indigo-500"></i> Distribución de Gastos por Categoría
+            </h3>
+            <div id="category-progress-container" class="space-y-3">
+                <p class="text-sm text-slate-500 dark:text-slate-400 italic">No hay gastos registrados aún para mostrar estadísticas.</p>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
-            <h5>¿Por qué elegirnos?</h5>
-            <ul>
-                <li>⏱️ <span><strong>Puntualidad garantizada:</strong> Respetamos tu tiempo.</span></li>
-                <li>🔒 <span><strong>Viajes seguros:</strong> Conductores de confianza y rutas optimizadas.</span></li>
-                <li>💬 <span><strong>Fácil de solicitar:</strong> Sin enredos ni esperas largas.</span></li>
-            </ul>
-            <p style="margin-top: 12px; margin-bottom: 0; font-weight: bold; color: var(--neon-verde);">¡Olvídate del estrés del tráfico! Déjanos el volante a nosotros.</p>
+            <!-- 2. SECCIÓN DE INGRESOS -->
+            <section class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold mb-4 flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                        <i class="fa-solid fa-circle-plus"></i> Gestión de Ingresos
+                    </h2>
+                    <!-- Formulario de Ingresos -->
+                    <form id="income-form" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                        <input type="text" id="income-desc" placeholder="Descripción (ej. Salario, Venta)" required
+                            class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="number" id="income-amount" placeholder="Monto ($ COP)" min="1" required
+                            class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="date" id="income-date" required
+                            class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="text" id="income-category" placeholder="Categoría (ej. Principal, Extra)" required
+                            class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button type="submit" class="sm:col-span-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl transition shadow-md shadow-blue-500/20 text-sm">
+                            <i class="fa-solid fa-plus mr-1"></i> Registrar Ingreso
+                        </button>
+                    </form>
+                </div>
+                <!-- Lista de Ingresos -->
+                <div>
+                    <h3 class="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-3">Historial de Ingresos</h3>
+                    <div class="overflow-x-auto max-h-60 overflow-y-auto pr-1">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead class="bg-slate-100 dark:bg-slate-700/50 sticky top-0 text-xs text-slate-500 uppercase">
+                                <tr>
+                                    <th class="p-2.5 rounded-l-lg">Descripción</th>
+                                    <th class="p-2.5">Monto</th>
+                                    <th class="p-2.5">Fecha</th>
+                                    <th class="p-2.5 rounded-r-lg text-right">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="income-table-body" class="divide-y divide-slate-100 dark:divide-slate-700">
+                                <!-- Dinámico -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. SECCIÓN DE GASTOS -->
+            <section class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold mb-4 flex items-center gap-2 text-rose-600 dark:text-rose-400">
+                        <i class="fa-solid fa-circle-minus"></i> Gestión de Gastos
+                    </h2>
+                    <!-- Formulario de Gastos -->
+                    <form id="expense-form" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                        <input type="text" id="expense-desc" placeholder="Descripción del Gasto" required
+                            class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
+                        <input type="number" id="expense-amount" placeholder="Monto ($ COP)" min="1" required
+                            class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
+                        
+                        <!-- Categorías Obligatorias -->
+                        <select id="expense-category" required
+                            class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
+                            <option value="" disabled selected>Selecciona una categoría</option>
+                            <option value="Servicios básicos">Servicios básicos</option>
+                            <option value="Comida">Comida</option>
+                            <option value="Comida de perros">Comida de perros</option>
+                            <option value="Créditos">Créditos</option>
+                            <option value="Arriendo">Arriendo</option>
+                            <option value="Mantenimiento de moto">Mantenimiento de moto</option>
+                            <option value="Suscripciones">Suscripciones</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+
+                        <input type="date" id="expense-date" required
+                            class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
+                        
+                        <!-- Selector de Estado Inicial -->
+                        <select id="expense-status" required
+                            class="sm:col-span-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
+                            <option value="Pagado">Pagado</option>
+                            <option value="Pendiente">Pendiente (Recordar en Google Calendar)</option>
+                        </select>
+
+                        <button type="submit" class="sm:col-span-2 bg-rose-600 hover:bg-rose-700 text-white font-medium py-2.5 rounded-xl transition shadow-md shadow-rose-500/20 text-sm">
+                            <i class="fa-solid fa-plus mr-1"></i> Registrar Gasto
+                        </button>
+                    </form>
+                </div>
+                <!-- Lista de Gastos con Cambio de Estado Rápido -->
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-sm font-semibold text-slate-500 dark:text-slate-400">Historial de Gastos y Pagos</h3>
+                        <span class="text-[11px] text-slate-400">💡 Haz clic en el botón de estado para cambiarlo al instante</span>
+                    </div>
+                    <div class="overflow-x-auto max-h-60 overflow-y-auto pr-1">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead class="bg-slate-100 dark:bg-slate-700/50 sticky top-0 text-xs text-slate-500 uppercase">
+                                <tr>
+                                    <th class="p-2.5 rounded-l-lg">Detalle</th>
+                                    <th class="p-2.5">Monto / Cat.</th>
+                                    <th class="p-2.5">Estado / Calendario</th>
+                                    <th class="p-2.5 rounded-r-lg text-right">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expense-table-body" class="divide-y divide-slate-100 dark:divide-slate-700">
+                                <!-- Dinámico -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
         </div>
 
-        <footer class="copyright">
-            © 2026 SegurApp Recorridos. Todos los derechos reservados.<br>
-            Desarrollado por <span>Sergio Chala</span>
-        </footer>
+        <!-- 4. SECCIÓN DE AHORRO PROGRAMADO -->
+        <section class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <div>
+                    <h2 class="text-lg font-semibold flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                        <i class="fa-solid fa-vault"></i> Módulo de Ahorro Programado (Metas Flexibles)
+                    </h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Crea casillas de ahorro personalizado para cumplir tus propósitos financieros.</p>
+                </div>
+                <button onclick="openGoalModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-medium px-4 py-2 rounded-xl text-sm transition shadow-md shadow-amber-500/20">
+                    <i class="fa-solid fa-plus mr-1"></i> Nueva Meta de Ahorro
+                </button>
+            </div>
+
+            <div id="savings-goals-container" class="space-y-6">
+                <p class="text-sm text-slate-500 dark:text-slate-400 italic">No tienes metas de ahorro configuradas. ¡Crea una para comenzar a tachar tus casillas!</p>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="goal-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-700">
+            <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-amber-600">
+                <i class="fa-solid fa-bullseye"></i> Configurar Meta de Ahorro
+            </h3>
+            <form id="goal-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">¿Para qué es tu ahorro? (Propósito)</label>
+                    <input type="text" id="goal-title" placeholder="ej. Fondo de Emergencia, Viaje, Moto" required
+                        class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Monto inicial o personalizado por casilla</label>
+                    <input type="text" id="goal-amounts-array" placeholder="2000, 5000, 10000, 20000, 40000" value="2000, 5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000" required
+                        class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeGoalModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 transition">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-sm bg-amber-600 hover:bg-amber-700 text-white font-medium transition shadow-md">Crear Plantilla</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <script>
-        let datosUbicacionActual = "Buscando satélites...";
-        const WHATSAPP_DESTINO = "573189882787";
+    <footer class="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 py-4 mt-auto text-center text-xs text-slate-500 dark:text-slate-400">
+        Control Financiero Personal Adaptado a Pesos Colombianos (COP) &bull; Datos guardados de forma local (LocalStorage).
+    </footer>
 
-        document.addEventListener("DOMContentLoaded", () => {
-            solicitarGeolocalizacion();
+    <!-- SCRIPT DE FUNCIONALIDAD -->
+    <script>
+        let finances = JSON.parse(localStorage.getItem('finances_data')) || {
+            incomes: [],
+            expenses: [],
+            savingsGoals: []
+        };
+
+        function saveData() {
+            localStorage.setItem('finances_data', JSON.stringify(finances));
+            renderAll();
+        }
+
+        // --- MODO OSCURO / CLARO ---
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                localStorage.setItem('theme', 'light');
+                icon.className = 'fa-solid fa-moon';
+            } else {
+                html.classList.remove('light');
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                icon.className = 'fa-solid fa-sun';
+            }
+        }
+
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.getElementById('theme-icon').className = 'fa-solid fa-sun';
+        }
+
+        // --- FORMATO DE MONEDA (COP) ---
+        function formatCOP(amount) {
+            return new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // --- GESTIÓN DE INGRESOS ---
+        document.getElementById('income-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newIncome = {
+                id: Date.now(),
+                desc: document.getElementById('income-desc').value,
+                amount: parseFloat(document.getElementById('income-amount').value),
+                date: document.getElementById('income-date').value,
+                category: document.getElementById('income-category').value
+            };
+            finances.incomes.push(newIncome);
+            document.getElementById('income-form').reset();
+            saveData();
         });
 
-        function solicitarGeolocalizacion() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
-                        datosUbicacionActual = `https://www.google.com/maps?q=${lat},${lon}`;
-                        
-                        const geoStatus = document.getElementById('geo-status');
-                        geoStatus.classList.add('listo');
-                        document.getElementById('geo-texto').innerText = "Ubicación de partida fijada por GPS.";
-                        geoStatus.querySelector('.material-icons').style.animation = 'none';
-                    },
-                    (error) => {
-                        document.getElementById('geo-texto').innerText = "Ubicación manual o imprecisa.";
-                        datosUbicacionActual = "GPS Local (Verificar mapa al contactar)";
-                        document.getElementById('geo-status').querySelector('.material-icons').style.animation = 'none';
-                    },
-                    { enableHighAccuracy: true, timeout: 10000 }
-                );
-            } else {
-                document.getElementById('geo-texto').innerText = "GPS no soportado.";
+        function deleteIncome(id) {
+            finances.incomes = finances.incomes.filter(item => item.id !== id);
+            saveData();
+        }
+
+        // --- GESTIÓN DE GASTOS Y ESTADOS ---
+        document.getElementById('expense-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newExpense = {
+                id: Date.now(),
+                desc: document.getElementById('expense-desc').value,
+                amount: parseFloat(document.getElementById('expense-amount').value),
+                category: document.getElementById('expense-category').value,
+                date: document.getElementById('expense-date').value,
+                status: document.getElementById('expense-status').value
+            };
+            finances.expenses.push(newExpense);
+            document.getElementById('expense-form').reset();
+            saveData();
+        });
+
+        function deleteExpense(id) {
+            finances.expenses = finances.expenses.filter(item => item.id !== id);
+            saveData();
+        }
+
+        function toggleExpenseStatus(id) {
+            const expense = finances.expenses.find(exp => exp.id === id);
+            if(expense) {
+                expense.status = expense.status === 'Pagado' ? 'Pendiente' : 'Pagado';
+                saveData();
             }
         }
 
-        function enviarReserva() {
-            const destino = "Origen fijado por GPS";
-            const notas = document.getElementById('reserva-notas').value.trim();
+        // Comprobar si un gasto está vencido (Fecha programada < Fecha actual y sigue Pendiente)
+        function isExpenseOverdue(expenseDate, status) {
+            if(status !== 'Pendiente' || !expenseDate) return false;
             
-            let mensaje = `*SOLICITUD DE RECORRIDO INMEDIATO* \n`;
-            mensaje += `───────────────────────\n\n`;
-            mensaje += ` *Hola! sergio chala, puedes pasar por mi?* \n`;
-            mensaje += ` *Destino:* ${destino}\n`;
-            if(notas) {
-                mensaje += ` *Detalles:* ${notas}\n`;
-            }
-            mensaje += `\n *Coordenadas de Origen en Tiempo Real:* \n${datosUbicacionActual}\n\n`;
-            mensaje += `───────────────────────\n\n`;
-            mensaje += ` *Tiempo estimado de respuesta 10min*`;
+            // Obtener fecha actual en formato YYYY-MM-DD sin desfase de zona horaria local
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const todayStr = `${year}-${month}-${day}`;
 
-            window.open(`https://wa.me/${WHATSAPP_DESTINO}?text=${encodeURIComponent(mensaje)}`, '_blank');
+            return expenseDate < todayStr;
         }
+
+        // Generar enlace directo a Google Calendar
+        function getGoogleCalendarUrl(expense) {
+            const title = encodeURIComponent(`Pago pendiente: ${expense.desc} - Categoría: ${expense.category}`);
+            const details = encodeURIComponent(`Monto a pagar: ${formatCOP(expense.amount)}. Gestionado desde Control Financiero Personal.`);
+            let dateStr = expense.date ? expense.date.replace(/-/g, '') : new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            const dates = `${dateStr}/${dateStr}`;
+            const email = 'segurappsite@gmail.com';
+
+            return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&dates=${dates}&add=${email}`;
+        }
+
+        // --- MÓDULO DE AHORRO PROGRAMADO ---
+        function openGoalModal() {
+            document.getElementById('goal-modal').classList.remove('hidden');
+        }
+
+        function closeGoalModal() {
+            document.getElementById('goal-modal').classList.add('hidden');
+        }
+
+        document.getElementById('goal-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = document.getElementById('goal-title').value;
+            const rawAmounts = document.getElementById('goal-amounts-array').value;
+            const amountsArray = rawAmounts.split(',').map(val => parseFloat(val.trim())).filter(val => !isNaN(val) && val > 0);
+
+            if(amountsArray.length === 0) {
+                return;
+            }
+
+            const newGoal = {
+                id: Date.now(),
+                title: title,
+                boxes: amountsArray.map(amt => ({ amount: amt, checked: false }))
+            };
+
+            finances.savingsGoals.push(newGoal);
+            document.getElementById('goal-form').reset();
+            closeGoalModal();
+            saveData();
+        });
+
+        function toggleSavingsBox(goalId, boxIndex) {
+            const goal = finances.savingsGoals.find(g => g.id === goalId);
+            if(goal) {
+                goal.boxes[boxIndex].checked = !goal.boxes[boxIndex].checked;
+                saveData();
+            }
+        }
+
+        function deleteGoal(goalId) {
+            finances.savingsGoals = finances.savingsGoals.filter(g => g.id !== goalId);
+            saveData();
+        }
+
+        function renderAll() {
+            const totalIncome = finances.incomes.reduce((acc, curr) => acc + curr.amount, 0);
+            const totalExpense = finances.expenses.reduce((acc, curr) => acc + curr.amount, 0);
+            
+            let totalSavedInGoals = 0;
+            finances.savingsGoals.forEach(goal => {
+                goal.boxes.forEach(box => {
+                    if(box.checked) totalSavedInGoals += box.amount;
+                });
+            });
+
+            const currentBalance = totalIncome - totalExpense;
+
+            document.getElementById('card-balance').innerText = formatCOP(currentBalance);
+            document.getElementById('card-income').innerText = formatCOP(totalIncome);
+            document.getElementById('card-expense').innerText = formatCOP(totalExpense);
+            document.getElementById('card-savings').innerText = formatCOP(totalSavedInGoals);
+
+            // Renderizar Ingresos
+            const incomeTable = document.getElementById('income-table-body');
+            incomeTable.innerHTML = '';
+            if(finances.incomes.length === 0) {
+                incomeTable.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-slate-400 italic">No hay ingresos registrados.</td></tr>`;
+            } else {
+                finances.incomes.forEach(inc => {
+                    incomeTable.innerHTML += `
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition">
+                            <td class="p-2.5 font-medium">${inc.desc}<br><span class="text-xs text-slate-400">${inc.category}</span></td>
+                            <td class="p-2.5 text-blue-600 dark:text-blue-400 font-semibold">${formatCOP(inc.amount)}</td>
+                            <td class="p-2.5 text-slate-500 text-xs">${inc.date}</td>
+                            <td class="p-2.5 text-right">
+                                <button onclick="deleteIncome(${inc.id})" class="text-slate-400 hover:text-rose-500 transition p-1"><i class="fa-solid fa-trash-can"></i></button>
+                            </td>
+                        </tr>`;
+                });
+            }
+
+            // Renderizar Gastos con verificación de vencimiento y animación en rojo
+            const expenseTable = document.getElementById('expense-table-body');
+            expenseTable.innerHTML = '';
+            if(finances.expenses.length === 0) {
+                expenseTable.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-slate-400 italic">No hay gastos registrados.</td></tr>`;
+            } else {
+                finances.expenses.forEach(exp => {
+                    const isOverdue = isExpenseOverdue(exp.date, exp.status);
+                    
+                    // Definir clases de la fila según si está vencido
+                    const rowClass = isOverdue 
+                        ? 'overdue-alert rounded-xl transition my-1' 
+                        : 'hover:bg-slate-50 dark:hover:bg-slate-700/30 transition';
+
+                    let statusBadge = '';
+                    if(exp.status === 'Pagado') {
+                        statusBadge = `
+                            <button onclick="toggleExpenseStatus(${exp.id})" title="Clic para marcar como Pendiente" class="inline-flex items-center gap-1.5 px-3 py-1 text-xs bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 rounded-full font-medium hover:bg-emerald-200 transition shadow-sm cursor-pointer">
+                                <i class="fa-solid fa-circle-check"></i> Pagado (Cambiar)
+                            </button>`;
+                    } else if(isOverdue) {
+                        statusBadge = `
+                            <div class="flex flex-col gap-1.5 items-start">
+                                <button onclick="toggleExpenseStatus(${exp.id})" title="Clic para marcar como Pagado" class="inline-flex items-center gap-1.5 px-3 py-1 text-xs bg-rose-600 text-white rounded-full font-bold hover:bg-rose-700 transition shadow-md animate-bounce cursor-pointer">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> ¡VENCIDO! (Marcar Pagado)
+                                </button>
+                                <a href="${getGoogleCalendarUrl(exp)}" target="_blank" class="inline-flex items-center gap-1 text-[11px] text-rose-700 dark:text-rose-300 hover:underline px-2 py-0.5 rounded-md font-medium">
+                                    <i class="fa-regular fa-calendar-days"></i> Agregar a Google Calendar
+                                </a>
+                            </div>`;
+                    } else {
+                        statusBadge = `
+                            <div class="flex flex-col gap-1.5 items-start">
+                                <button onclick="toggleExpenseStatus(${exp.id})" title="Clic para marcar como Pagado" class="inline-flex items-center gap-1.5 px-3 py-1 text-xs bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 rounded-full font-medium hover:bg-amber-200 transition shadow-sm cursor-pointer">
+                                    <i class="fa-solid fa-clock"></i> Pendiente (Marcar Pagado)
+                                </button>
+                                <a href="${getGoogleCalendarUrl(exp)}" target="_blank" class="inline-flex items-center gap-1 text-[11px] bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 hover:underline px-2 py-1 rounded-md font-medium border border-blue-200 dark:border-blue-800">
+                                    <i class="fa-regular fa-calendar-days"></i> 📅 Google Calendar
+                                </a>
+                            </div>`;
+                    }
+
+                    expenseTable.innerHTML += `
+                        <tr class="${rowClass} align-top">
+                            <td class="p-3 font-medium">
+                                ${exp.desc}
+                                ${isOverdue ? '<span class="block text-[11px] font-bold text-rose-600 dark:text-rose-400"><i class="fa-solid fa-bell"></i> Fecha límite superada</span>' : ''}
+                                <br><span class="text-xs text-slate-400">Fecha: ${exp.date}</span>
+                            </td>
+                            <td class="p-3">
+                                <span class="text-rose-600 dark:text-rose-400 font-semibold">${formatCOP(exp.amount)}</span><br>
+                                <span class="text-[11px] text-slate-500 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">${exp.category}</span>
+                            </td>
+                            <td class="p-3">${statusBadge}</td>
+                            <td class="p-3 text-right">
+                                <button onclick="deleteExpense(${exp.id})" class="text-slate-400 hover:text-rose-500 transition p-1"><i class="fa-solid fa-trash-can"></i></button>
+                            </td>
+                        </tr>`;
+                });
+            }
+
+            // Renderizar Gráfico de Categorías
+            const categoryContainer = document.getElementById('category-progress-container');
+            categoryContainer.innerHTML = '';
+            if(finances.expenses.length === 0) {
+                categoryContainer.innerHTML = `<p class="text-sm text-slate-500 dark:text-slate-400 italic">No hay gastos registrados aún para mostrar estadísticas.</p>`;
+            } else {
+                const categoryTotals = {};
+                finances.expenses.forEach(exp => {
+                    categoryTotals[exp.category] = (categoryTotals[exp.category] || 0) + exp.amount;
+                });
+
+                for(const [cat, amt] of Object.entries(categoryTotals)) {
+                    const percentage = totalExpense > 0 ? ((amt / totalExpense) * 100).toFixed(1) : 0;
+                    categoryContainer.innerHTML += `
+                        <div>
+                            <div class="flex justify-between text-xs font-medium mb-1">
+                                <span class="text-slate-700 dark:text-slate-300">${cat}</span>
+                                <span class="text-slate-500">${formatCOP(amt)} (${percentage}%)</span>
+                            </div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-rose-500 h-2.5 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>`;
+                }
+            }
+
+            // Renderizar Metas de Ahorro
+            const goalsContainer = document.getElementById('savings-goals-container');
+            goalsContainer.innerHTML = '';
+            if(finances.savingsGoals.length === 0) {
+                goalsContainer.innerHTML = `<p class="text-sm text-slate-500 dark:text-slate-400 italic">No tienes metas de ahorro configuradas. ¡Crea una para comenzar a tachar tus casillas!</p>`;
+            } else {
+                finances.savingsGoals.forEach(goal => {
+                    let goalSaved = goal.boxes.filter(b => b.checked).reduce((acc, b) => acc + b.amount, 0);
+                    let goalTotalPossible = goal.boxes.reduce((acc, b) => acc + b.amount, 0);
+                    let goalProgress = goalTotalPossible > 0 ? ((goalSaved / goalTotalPossible) * 100).toFixed(0) : 0;
+
+                    let boxesHtml = '';
+                    goal.boxes.forEach((box, index) => {
+                        let boxClass = box.checked 
+                            ? 'bg-emerald-500 text-white border-emerald-600 shadow-sm scale-95 font-semibold' 
+                            : 'bg-slate-50 dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-amber-500';
+                        boxesHtml += `
+                            <button onclick="toggleSavingsBox(${goal.id}, ${index})" class="p-2.5 rounded-xl border text-xs font-medium transition-all flex flex-col items-center justify-center gap-1 ${boxClass}">
+                                <span class="text-[10px] opacity-75">Casilla ${index + 1}</span>
+                                <span>${formatCOP(box.amount)}</span>
+                                <i class="fa-solid ${box.checked ? 'fa-circle-check text-white' : 'fa-circle text-slate-300 dark:text-slate-700'} text-xs"></i>
+                            </button>`;
+                    });
+
+                    goalsContainer.innerHTML += `
+                        <div class="bg-slate-50 dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-4">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                                <div>
+                                    <h4 class="font-bold text-base text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                                        <i class="fa-solid fa-flag text-amber-500"></i> ${goal.title}
+                                    </h4>
+                                    <p class="text-xs text-slate-500">Ahorrado: <span class="font-semibold text-emerald-600 dark:text-emerald-400">${formatCOP(goalSaved)}</span> de ${formatCOP(goalTotalPossible)} (${goalProgress}%)</p>
+                                </div>
+                                <button onclick="deleteGoal(${goal.id})" class="text-xs text-rose-500 hover:text-rose-700 font-medium transition flex items-center gap-1">
+                                    <i class="fa-solid fa-trash-can"></i> Eliminar Meta
+                                </button>
+                            </div>
+                            <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                                <div class="bg-emerald-500 h-2 rounded-full transition-all duration-500" style="width: ${goalProgress}%"></div>
+                            </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 pt-2">
+                                ${boxesHtml}
+                            </div>
+                        </div>`;
+                });
+            }
+        }
+
+        renderAll();
     </script>
 </body>
 </html>
